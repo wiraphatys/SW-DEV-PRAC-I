@@ -3,6 +3,30 @@ const express = require('express')
 const app = express()
 app.use(express.json())     // use bodyParser
 
+// swagger
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUI = require('swagger-ui-express');
+// Swagger setup options
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+            title: "Library API",
+            version: '1.0.0',
+            description: "A simple Express API for managing a library"
+        },
+        servers: [
+            {
+                url: 'http://localhost:3000/api/v1'
+            }
+        ],
+    },
+    // Ensure this path matches where your annotated route files are
+    apis: ['./routes/*.js'],
+};
+const swaggerDoc = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc))
+
 // define port
 const PORT = process.env.PORT || 3000;
 
@@ -44,7 +68,7 @@ app.use(hpp())
 
 // CORS : Cross Origin Resource Sharing
 const cors = require('cors')
-app.use(cors)
+app.use(cors())
 // router
 app.use("/api/v1/hospitals", require('./routes/hospitalRouter'))
 app.use("/api/v1/auth", require('./routes/authRouter'))
